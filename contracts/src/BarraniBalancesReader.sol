@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.26;
+pragma solidity 0.8.26;
 
 contract BarraniBalancesReader {
     address internal constant L1_SLOAD_ADDRESS = 0x0000000000000000000000000000000000000101;
@@ -15,9 +15,8 @@ contract BarraniBalancesReader {
 
     function retrieveFromL1() external {
         bytes memory input = abi.encodePacked(l1StorageAddr, uint256(uint160(msg.sender)));
-        bool success;
-        bytes memory ret;
-        (success, ret) = L1_SLOAD_ADDRESS.staticcall(input);
+
+        (bool success, bytes memory ret) = L1_SLOAD_ADDRESS.staticcall(input);
         if (!success) {
             revert("L1SLOAD failed");
         }
