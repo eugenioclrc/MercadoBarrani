@@ -18,6 +18,7 @@ contract Vault is Ownable {
         USDC = address(depositContract.USDC());
     }
 
+    // @notice for the hackaton this might be enough, we could eventually have a prover contract that owns this contract
     function withdraw(address to, uint256 amount) external onlyOwner {
         // @todo instead of owner should use proof
         // @todo calculate interest profit if any and send profit to contract owner
