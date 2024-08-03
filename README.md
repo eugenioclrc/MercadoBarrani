@@ -1,6 +1,14 @@
-# MERCADO BARRANI
-## > A ZK-USDC Privacy Token
+# MERCADO BARRANI <small>A ZK-USDC Privacy Token</small>
 
+
+## Table of Contents
+
+- [Introduction](#Introduction)
+- [Workflow](#Workflow)
+- [Contracts](#Contracts)
+- [Circuits](#Circuits)
+- [Citations and References](#Citations-and-References)
+- 
 
 ## Introduction
 
@@ -11,6 +19,23 @@ TODO
 <img src="./step1.png" />
 
 <img src="./step2.png" />
+
+## Contracts
+
+### Layer 1 Contracts
+
+### ZK-Scroll Contracts
+
+
+## Circuits
+
+Mint circuit
+
+Transfer to new
+
+Transfer
+
+Burn
 
 ## Citations and References
 

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.26;
 
-import "./PublicKeyInfrastructure.sol";
-import {MintUltraVerifier} from "../verifiers/mint_plonk_vk.sol";
-import {TransferUltraVerifier} from "../verifiers/transfer_plonk_vk.sol";
-import {TransferToNewUltraVerifier} from "../verifiers/transfer_to_new_plonk_vk.sol";
+import {PublicKeyInfrastructure} from "./PublicKeyInfrastructure.sol";
+import {UltraVerifier as MintUltraVerifier} from "../verifiers/mint/plonk_vk.sol";
+import {UltraVerifier as TransferUltraVerifier} from "../verifiers/transfer/plonk_vk.sol";
+import {UltraVerifier as TransferToNewUltraVerifier} from "../verifiers/transfer_to_new/plonk_vk.sol";
 
 /**
  * @dev Implementation of PrivateToken.
