@@ -24,9 +24,13 @@ TODO
 
 ### Layer 1 Contracts
 
+- Vault: [0x4DFB5C0F45AE4e0C4cA57E0238FcCcfAb9b36003](https://sepolia.etherscan.io/address/0x4DFB5C0F45AE4e0C4cA57E0238FcCcfAb9b36003#code)
+- Deposit contract: [0xc04e68Ba3c8094097976EA542c708a2a671318A7](https://sepolia.etherscan.io/address/0xc04e68Ba3c8094097976EA542c708a2a671318A7#code)
+- Tx of deposit in L1: [0x305f0495f32c.....1a135b16da](https://sepolia.etherscan.io/tx/0x305f0495f32c6321ff98898c5d52738370b5764f77aab521537a261a135b16da)
+
 <details>
 
-<summary>Layer 1 vault and deposit contract: 0x4DFB5C0F45AE4e0C4cA57E0238FcCcfAb9b36003</summary>
+<summary>Layer 1 vault and deposit contract 0x4DFB5C0F45AE4e0C4cA57E0238FcCcfAb9b36003</summary>
 
 Deployed with command:
 ```sh
@@ -67,9 +71,11 @@ Submitted contract for verification:
 
 </details>
 
+</summary>
 
 ### ZK-Scroll Contracts
 
+todo
 
 ## Circuits
 
