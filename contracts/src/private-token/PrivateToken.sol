@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
-import {PublicKeyInfrastructure} from "./PublicKeyInfrastructure.sol";
+import {PublicKeyInfrastructure, PublicKey} from "./PublicKeyInfrastructure.sol";
 import {UltraVerifier as MintUltraVerifier} from "../verifiers/mint/plonk_vk.sol";
 import {UltraVerifier as TransferUltraVerifier} from "../verifiers/transfer/plonk_vk.sol";
 import {UltraVerifier as TransferToNewUltraVerifier} from "../verifiers/transfer_to_new/plonk_vk.sol";

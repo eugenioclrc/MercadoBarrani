@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
-import {DataTypes} from "@aave/core-v3/contracts/protocol/libraries/types/DataTypes.sol";
+import {DataTypes} from "aave-v3-core/contracts/protocol/libraries/types/DataTypes.sol";
 
 contract AaveMockPool {
     mapping(address => uint256) public balances;
@@ -31,24 +31,24 @@ contract AaveMockPool {
     }
 
     function withdraw(
-        address asset,
+        address _asset,
         uint256 amount,
         address to
     ) external returns (uint256) {
         balances[msg.sender] -= amount;//  should do.rayDiv(liquidityIndex);
 
-        IERC20(asset).transfer(to, amount);
+        IERC20(_asset).transfer(to, amount);
 
         return amount;
     }
 
     function supply(
-        address asset,
+        address _asset,
         uint256 amount,
         address to,
         uint16 /*referralCode*/
     ) external {
-        IERC20(asset).transferFrom(msg.sender, address(this), amount);
+        IERC20(_asset).transferFrom(msg.sender, address(this), amount);
 
         balances[to] += amount;//  should do .rayDiv(liquidityIndex);
     }
