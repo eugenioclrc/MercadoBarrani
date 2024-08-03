@@ -5,9 +5,10 @@ import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
 contract L1BarraniDeposits {
-    address immutable public VAULT;
-    IERC20 immutable public USDC;
-    IPool immutable public AAVE_POOL;
+    address public immutable VAULT;
+    IERC20 public immutable USDC;
+    IPool public immutable AAVE_POOL;
+
     constructor(address _USDC, address _AAVE_POOL) {
         VAULT = msg.sender;
         USDC = IERC20(_USDC);

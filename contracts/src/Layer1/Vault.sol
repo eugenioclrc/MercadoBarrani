@@ -6,10 +6,11 @@ import {L1BarraniDeposits} from "./L1BarraniDeposits.sol";
 
 import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
 
-contract Vault is Ownable() {
+contract Vault is Ownable {
     L1BarraniDeposits public depositContract;
-    IPool public  immutable AAVE_POOL;
+    IPool public immutable AAVE_POOL;
     address public immutable USDC;
+
     constructor(address _usdc, address _aavePool) {
         _initializeOwner(msg.sender);
         depositContract = new L1BarraniDeposits(_usdc, _aavePool);

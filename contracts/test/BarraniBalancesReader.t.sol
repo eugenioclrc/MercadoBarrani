@@ -11,7 +11,5 @@ contract CounterTest is Test {
         reader = new BarraniBalancesReader(address(this));
     }
 
-    function test_Increment() public {
-        
-    }
+    function test_Increment() public {}
 }

@@ -13,7 +13,8 @@ import {UltraVerifier as TransferToNewUltraVerifier} from "../verifiers/transfer
  * Because we use Exponential ElGamal encryption, each EncryptedBalance is a pair of points on Baby Jubjub (C1,C2) = ((C1x,C1y),(C2x,C2y)).
  */
 contract PrivateToken {
-    struct EncryptedBalance { // #TODO : We could pack those in 2 uints instead of 4 to save storage costs (for e.g using circomlibjs library to pack points on BabyJubjub) 
+    struct EncryptedBalance {
+        // #TODO : We could pack those in 2 uints instead of 4 to save storage costs (for e.g using circomlibjs library to pack points on BabyJubjub)
         uint256 C1x;
         uint256 C1y;
         uint256 C2x;
@@ -26,24 +27,36 @@ contract PrivateToken {
     TransferToNewUltraVerifier public immutable TransferToNewVerifier;
     uint40 public immutable totalSupply;
 
-    mapping(address=>EncryptedBalance) public balances;
+    mapping(address => EncryptedBalance) public balances;
 
     event PrivateTransfer(address indexed to, address indexed from);
 
-    constructor(uint40 totalSupply_, address PKIAddress, address MintVerifierAddress, address TransferVerifierAddress, 
-            address TransferToNewVerifierAddress, bytes memory proof_mint, EncryptedBalance memory  totalSupplyEncrypted) {
+    constructor(
+        uint40 totalSupply_,
+        address PKIAddress,
+        address MintVerifierAddress,
+        address TransferVerifierAddress,
+        address TransferToNewVerifierAddress,
+        bytes memory proof_mint,
+        EncryptedBalance memory totalSupplyEncrypted
+    ) {
         PKI = PublicKeyInfrastructure(PKIAddress);
         MintVerifier = MintUltraVerifier(MintVerifierAddress);
         TransferVerifier = TransferUltraVerifier(TransferVerifierAddress);
         TransferToNewVerifier = TransferToNewUltraVerifier(TransferToNewVerifierAddress);
         PublicKey memory registeredKey = PKI.getRegistredKey(msg.sender);
-        require(registeredKey.X+registeredKey.Y!=0,"Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
+        require(registeredKey.X + registeredKey.Y != 0, "Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
         totalSupply = totalSupply_;
-        _mint(msg.sender,totalSupply_,proof_mint,registeredKey,totalSupplyEncrypted);
+        _mint(msg.sender, totalSupply_, proof_mint, registeredKey, totalSupplyEncrypted);
     }
 
-    function _mint(address minter, uint40 amount, bytes memory proof_mint, PublicKey memory registeredKey, 
-            EncryptedBalance memory totalSupplyEncrypted) internal {
+    function _mint(
+        address minter,
+        uint40 amount,
+        bytes memory proof_mint,
+        PublicKey memory registeredKey,
+        EncryptedBalance memory totalSupplyEncrypted
+    ) internal {
         bytes32[] memory publicInputs = new bytes32[](7);
         publicInputs[0] = bytes32(registeredKey.X);
         publicInputs[1] = bytes32(registeredKey.Y);
@@ -56,31 +69,50 @@ contract PrivateToken {
         balances[minter] = totalSupplyEncrypted;
     }
 
-    function transfer(address to, EncryptedBalance calldata EncryptedBalanceOldMe, EncryptedBalance calldata EncryptedBalanceOldTo, 
-            EncryptedBalance calldata EncryptedBalanceNewMe, EncryptedBalance calldata EncryptedBalanceNewTo, bytes memory proof_transfer) public {
+    function transfer(
+        address to,
+        EncryptedBalance calldata EncryptedBalanceOldMe,
+        EncryptedBalance calldata EncryptedBalanceOldTo,
+        EncryptedBalance calldata EncryptedBalanceNewMe,
+        EncryptedBalance calldata EncryptedBalanceNewTo,
+        bytes memory proof_transfer
+    ) public {
         EncryptedBalance memory EncryptedBalanceOldMeNow = balances[msg.sender];
         EncryptedBalance memory EncryptedBalanceOldToNow = balances[to];
-        require(EncryptedBalanceOldToNow.C1x==EncryptedBalanceOldTo.C1x && EncryptedBalanceOldToNow.C1y==EncryptedBalanceOldTo.C1y
-            && EncryptedBalanceOldToNow.C2x==EncryptedBalanceOldTo.C2x && EncryptedBalanceOldToNow.C2y==EncryptedBalanceOldTo.C2y
-            && EncryptedBalanceOldMeNow.C1x==EncryptedBalanceOldMe.C1x && EncryptedBalanceOldMeNow.C1y==EncryptedBalanceOldMe.C1y
-            && EncryptedBalanceOldMeNow.C2x==EncryptedBalanceOldMe.C2x && EncryptedBalanceOldMeNow.C2y==EncryptedBalanceOldMe.C2y); // this require is at the top of the transfer function, in order to limit gas spent in case of accidental front-running - front-running attack issue is already deterred thanks to the assert(value>=1) constraint inside the circuits (see comments in transfer/src/main.nr)
-        require(msg.sender!=to, "Cannot transfer to self");
+        require(
+            EncryptedBalanceOldToNow.C1x == EncryptedBalanceOldTo.C1x
+                && EncryptedBalanceOldToNow.C1y == EncryptedBalanceOldTo.C1y
+                && EncryptedBalanceOldToNow.C2x == EncryptedBalanceOldTo.C2x
+                && EncryptedBalanceOldToNow.C2y == EncryptedBalanceOldTo.C2y
+                && EncryptedBalanceOldMeNow.C1x == EncryptedBalanceOldMe.C1x
+                && EncryptedBalanceOldMeNow.C1y == EncryptedBalanceOldMe.C1y
+                && EncryptedBalanceOldMeNow.C2x == EncryptedBalanceOldMe.C2x
+                && EncryptedBalanceOldMeNow.C2y == EncryptedBalanceOldMe.C2y
+        ); // this require is at the top of the transfer function, in order to limit gas spent in case of accidental front-running - front-running attack issue is already deterred thanks to the assert(value>=1) constraint inside the circuits (see comments in transfer/src/main.nr)
+        require(msg.sender != to, "Cannot transfer to self");
         PublicKey memory registeredKeyMe = PKI.getRegistredKey(msg.sender);
         PublicKey memory registeredKeyTo = PKI.getRegistredKey(to);
-        require(registeredKeyMe.X+registeredKeyMe.Y!=0,"Sender has not registered a Public Key yet");
-        require(registeredKeyTo.X+registeredKeyTo.Y!=0,"Receiver has not registered a Public Key yet");
-        require(EncryptedBalanceOldMe.C1x+EncryptedBalanceOldMe.C1y+EncryptedBalanceOldMe.C1y+EncryptedBalanceOldMe.C2y!=0,"Sender has not received tokens yet"); // this should never overflow because 4*p<type(uint256).max
+        require(registeredKeyMe.X + registeredKeyMe.Y != 0, "Sender has not registered a Public Key yet");
+        require(registeredKeyTo.X + registeredKeyTo.Y != 0, "Receiver has not registered a Public Key yet");
+        require(
+            EncryptedBalanceOldMe.C1x + EncryptedBalanceOldMe.C1y + EncryptedBalanceOldMe.C1y
+                + EncryptedBalanceOldMe.C2y != 0,
+            "Sender has not received tokens yet"
+        ); // this should never overflow because 4*p<type(uint256).max
 
-        bool receiverAlreadyReceived = (EncryptedBalanceOldTo.C1x+EncryptedBalanceOldTo.C1y+EncryptedBalanceOldTo.C1y+EncryptedBalanceOldTo.C2y!=0); // this should never overflow because 4*p<type(uint256).max
+        bool receiverAlreadyReceived = (
+            EncryptedBalanceOldTo.C1x + EncryptedBalanceOldTo.C1y + EncryptedBalanceOldTo.C1y
+                + EncryptedBalanceOldTo.C2y != 0
+        ); // this should never overflow because 4*p<type(uint256).max
 
-        if (receiverAlreadyReceived){
+        if (receiverAlreadyReceived) {
             bytes32[] memory publicInputs = new bytes32[](20);
             publicInputs[0] = bytes32(registeredKeyMe.X);
             publicInputs[1] = bytes32(registeredKeyMe.Y);
 
             publicInputs[2] = bytes32(registeredKeyTo.X);
             publicInputs[3] = bytes32(registeredKeyTo.Y);
-            
+
             publicInputs[4] = bytes32(EncryptedBalanceOldMe.C1x);
             publicInputs[5] = bytes32(EncryptedBalanceOldMe.C1y);
             publicInputs[6] = bytes32(EncryptedBalanceOldMe.C2x);
@@ -109,7 +141,7 @@ contract PrivateToken {
 
             publicInputs[2] = bytes32(registeredKeyTo.X);
             publicInputs[3] = bytes32(registeredKeyTo.Y);
-            
+
             publicInputs[4] = bytes32(EncryptedBalanceOldMe.C1x);
             publicInputs[5] = bytes32(EncryptedBalanceOldMe.C1y);
             publicInputs[6] = bytes32(EncryptedBalanceOldMe.C2x);
@@ -125,10 +157,12 @@ contract PrivateToken {
             publicInputs[14] = bytes32(EncryptedBalanceNewTo.C2x);
             publicInputs[15] = bytes32(EncryptedBalanceNewTo.C2y);
 
-            require(TransferToNewVerifier.verify(proof_transfer, publicInputs), "Transfer to new address proof is invalid");
+            require(
+                TransferToNewVerifier.verify(proof_transfer, publicInputs), "Transfer to new address proof is invalid"
+            );
         }
         balances[msg.sender] = EncryptedBalanceNewMe;
         balances[to] = EncryptedBalanceNewTo;
-        emit PrivateTransfer(msg.sender,to);
+        emit PrivateTransfer(msg.sender, to);
     }
 }

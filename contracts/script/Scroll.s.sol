@@ -8,12 +8,10 @@ import {UltraVerifier as MintUltraVerifier} from "../src/verifiers/mint/plonk_vk
 import {UltraVerifier as TransferUltraVerifier} from "../src/verifiers/transfer/plonk_vk.sol";
 import {UltraVerifier as TransferToNewUltraVerifier} from "../src/verifiers/transfer_to_new/plonk_vk.sol";
 
-
 contract CounterScript is Script {
-   // Counter public counter;
+    // Counter public counter;
 
-    function setUp() public {
-    }
+    function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
