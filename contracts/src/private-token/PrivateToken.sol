@@ -32,22 +32,27 @@ contract PrivateToken {
     event PrivateTransfer(address indexed to, address indexed from);
 
     constructor(
-        uint40 totalSupply_,
         address PKIAddress,
         address MintVerifierAddress,
         address TransferVerifierAddress,
-        address TransferToNewVerifierAddress,
-        bytes memory proof_mint,
-        EncryptedBalance memory totalSupplyEncrypted
+        address TransferToNewVerifierAddress
     ) {
         PKI = PublicKeyInfrastructure(PKIAddress);
         MintVerifier = MintUltraVerifier(MintVerifierAddress);
         TransferVerifier = TransferUltraVerifier(TransferVerifierAddress);
         TransferToNewVerifier = TransferToNewUltraVerifier(TransferToNewVerifierAddress);
+    }
+
+    // @audit important on this version if user mint more than once it will loose all balance
+    function mint(uint256 amount, bytes memory proof_mint, EncryptedBalance memory totalBalanceEncrypted) external {
+        uint256 newTotalSupply = uint256(totalSupply_ + amount);
+        require(newTotalSupply <= type(uint40).max, "Total supply cannot exceed 1099511627775");
+        _totalSupply = uint40(newTotalSupply);
+
         PublicKey memory registeredKey = PKI.getRegistredKey(msg.sender);
         require(registeredKey.X + registeredKey.Y != 0, "Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
-        totalSupply = totalSupply_;
-        _mint(msg.sender, totalSupply_, proof_mint, registeredKey, totalSupplyEncrypted);
+
+        _mint(msg.sender, uint40(amount), proof_mint, registeredKey, totalSupplyEncrypted);
     }
 
     function _mint(
