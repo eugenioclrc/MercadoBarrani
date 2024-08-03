@@ -7,6 +7,8 @@ import {Script, console} from "forge-std/Script.sol";
 contract CounterScript is Script {
    // Counter public counter;
 
+   address AAVE_SEPOLIA = 0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951;
+
     function setUp() public {}
 
     function run() public {

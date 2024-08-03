@@ -25,12 +25,6 @@ contract L1BarraniDeposits {
     }
 
     function withdraw(uint256 amount) external {
-        // @notice no safe transfer, we know USDC is ERC20 compliance
-        USDC.transfer(msg.sender, amount);
-
-        // decrement the balance of the caller, hack to make it easier to read
-        assembly {
-            sstore(caller(), sub(sload(caller()), amount))
-        }
+       // @TODO
     }
 }
