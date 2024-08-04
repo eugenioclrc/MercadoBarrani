@@ -5,7 +5,7 @@
 
 - [Introduction](#Introduction)
 - [Workflow](#Workflow)
-- [Contracts](#Contracts)
+- [Contracts](#Contracts-and-transactions)
 - [Circuits](#Circuits)
 - [Citations and References](#Citations-and-References)
 
