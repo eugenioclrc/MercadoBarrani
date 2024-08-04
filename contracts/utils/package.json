@@ -1,0 +1,14 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "main": "1.keygen.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "eugenioclrc",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "circomlibjs": "^0.1.7"
+  }
+}

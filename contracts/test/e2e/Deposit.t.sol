@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Vault, L1BarraniDeposits} from "../src/Layer1/Vault.sol";
+import {Vault, L1BarraniDeposits} from "../../src/Layer1/Vault.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
 contract DepositTest is Test {

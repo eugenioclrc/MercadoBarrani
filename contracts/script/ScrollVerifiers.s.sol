@@ -8,18 +8,22 @@ import {UltraVerifier as MintUltraVerifier} from "../src/verifiers/mint/plonk_vk
 import {UltraVerifier as TransferUltraVerifier} from "../src/verifiers/transfer/plonk_vk.sol";
 import {UltraVerifier as TransferToNewUltraVerifier} from "../src/verifiers/transfer_to_new/plonk_vk.sol";
 
-contract CounterScript is Script {
-    // Counter public counter;
+contract VerifiersDeployScript is Script {
 
     function setUp() public {}
 
-    function run() public {
+    function run() public returns(address PKIAddress, address MintVerifierAddress, address TransferVerifierAddress, address TransferToNewVerifierAddress) {
         vm.startBroadcast();
 
         PublicKeyInfrastructure pki = new PublicKeyInfrastructure();
         MintUltraVerifier mintVerifier = new MintUltraVerifier();
         TransferUltraVerifier transferVerifier = new TransferUltraVerifier();
         TransferToNewUltraVerifier transferToNewVerifier = new TransferToNewUltraVerifier();
+
+        PKIAddress = address(pki);
+        MintVerifierAddress = address(mintVerifier);
+        TransferVerifierAddress = address(transferVerifier);
+        TransferToNewVerifierAddress = address(transferToNewVerifier);
 
         vm.stopBroadcast();
     }

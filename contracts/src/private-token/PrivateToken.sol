@@ -6,6 +6,8 @@ import {UltraVerifier as MintUltraVerifier} from "../verifiers/mint/plonk_vk.sol
 import {UltraVerifier as TransferUltraVerifier} from "../verifiers/transfer/plonk_vk.sol";
 import {UltraVerifier as TransferToNewUltraVerifier} from "../verifiers/transfer_to_new/plonk_vk.sol";
 
+import {BarraniBalancesReader} from "./BarraniBalancesReader.sol";
+
 /**
  * @dev Implementation of PrivateToken.
  * total supply is set at construction by the deployer and cannot exceed type(uint40).max = 1099511627775 because during Exponential ElGamal decryption we must solve the DLP quickly
@@ -21,11 +23,12 @@ contract PrivateToken {
         uint256 C2y;
     }
 
+    BarraniBalancesReader public immutable reader;
     PublicKeyInfrastructure public immutable PKI;
     MintUltraVerifier public immutable MintVerifier;
     TransferUltraVerifier public immutable TransferVerifier;
     TransferToNewUltraVerifier public immutable TransferToNewVerifier;
-    uint40 public immutable totalSupply;
+    uint40 public totalSupply;
 
     mapping(address => EncryptedBalance) public balances;
 
@@ -35,24 +38,30 @@ contract PrivateToken {
         address PKIAddress,
         address MintVerifierAddress,
         address TransferVerifierAddress,
-        address TransferToNewVerifierAddress
+        address TransferToNewVerifierAddress,
+        address _l1Storage
     ) {
         PKI = PublicKeyInfrastructure(PKIAddress);
         MintVerifier = MintUltraVerifier(MintVerifierAddress);
         TransferVerifier = TransferUltraVerifier(TransferVerifierAddress);
         TransferToNewVerifier = TransferToNewUltraVerifier(TransferToNewVerifierAddress);
+        reader = new BarraniBalancesReader(_l1Storage);
     }
 
     // @audit important on this version if user mint more than once it will loose all balance
     function mint(uint256 amount, bytes memory proof_mint, EncryptedBalance memory totalBalanceEncrypted) external {
-        uint256 newTotalSupply = uint256(totalSupply_ + amount);
+        uint256 pendingAmount = reader.readAndReset(msg.sender);
+        require(pendingAmount == amount, "No balance to mint");
+
+        uint256 newTotalSupply = uint256(totalSupply + amount);
         require(newTotalSupply <= type(uint40).max, "Total supply cannot exceed 1099511627775");
-        _totalSupply = uint40(newTotalSupply);
+        totalSupply = uint40(newTotalSupply);
 
         PublicKey memory registeredKey = PKI.getRegistredKey(msg.sender);
-        require(registeredKey.X + registeredKey.Y != 0, "Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
+        require(registeredKey.X != 0, "Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
+        require(registeredKey.Y != 0, "Deployer has not registered a Public Key yet"); // this should never overflow because 4*p<type(uint256).max
 
-        _mint(msg.sender, uint40(amount), proof_mint, registeredKey, totalSupplyEncrypted);
+        _mint(msg.sender, uint40(amount), proof_mint, registeredKey, totalBalanceEncrypted);
     }
 
     function _mint(
@@ -97,8 +106,10 @@ contract PrivateToken {
         require(msg.sender != to, "Cannot transfer to self");
         PublicKey memory registeredKeyMe = PKI.getRegistredKey(msg.sender);
         PublicKey memory registeredKeyTo = PKI.getRegistredKey(to);
-        require(registeredKeyMe.X + registeredKeyMe.Y != 0, "Sender has not registered a Public Key yet");
-        require(registeredKeyTo.X + registeredKeyTo.Y != 0, "Receiver has not registered a Public Key yet");
+        require(registeredKeyMe.X != 0, "Sender has not registered a Public Key yet");
+        require(registeredKeyMe.Y != 0, "Sender has not registered a Public Key yet");
+        require(registeredKeyTo.X != 0, "Receiver has not registered a Public Key yet");
+        require(registeredKeyTo.Y != 0, "Receiver has not registered a Public Key yet");
         require(
             EncryptedBalanceOldMe.C1x + EncryptedBalanceOldMe.C1y + EncryptedBalanceOldMe.C1y
                 + EncryptedBalanceOldMe.C2y != 0,

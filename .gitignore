@@ -1,3 +1,4 @@
 /circuits/exponential_elgamal/babygiant/target/
 /circuits/exponential_elgamal/babygiant_native/target/
 /.env*
+/contracts/utils/node_modules/
