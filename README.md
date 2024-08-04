@@ -89,13 +89,9 @@ Submitted contract for verification:
 
 ## Circuits
 
-Mint circuit
-
-Transfer to new
-
-Transfer
-
-Burn
+- Mint: [`./circuits/mint/src/main.nr`](https://github.com/eugenioclrc/MercadoBarrani/blob/main/circuits/mint/src/main.nr)
+- Transfer: [`./circuits/transfer/src/main.nr`](https://github.com/eugenioclrc/MercadoBarrani/blob/main/circuits/transfer/src/main.nr)
+- Transfer to new: [`./circuits/transfer_to_new/src/main.nr`](https://github.com/eugenioclrc/MercadoBarrani/blob/main/circuits/transfer_to_new/src/main.nr)
 
 ## Citations and References
 
