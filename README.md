@@ -11,7 +11,12 @@
 
 ## Introduction
 
-TODO
+An ambitious idea with ultra-complex components.
+
+1) A user can deposit USDC on Ethereum, which will then be deposited into AAVE. The interest earned is considered protocol revenue.
+2) From Scroll, using the precompile to read Ethereum's state, we read the user's deposited balance, and with that, we mint a wrapped version of USDC, the ZK-USDC. This token has private amounts, meaning that after minting, every time it's transferred, no one knows the amount being transferred.
+3) When someone wants to unwrap it, the ZK-USDC is burned, revealing the total amount to be unwrapped. A message is sent via Scroll's messaging service, and a commitment is given to the user.
+4) Eventually (if we claim immediately, it will reveal our identity), using ZK again, a proof is provided to make the withdrawal from any wallet. This behavior is similar to withdrawals on Tornado Cash.
 
 ## Workflow
 
