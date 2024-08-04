@@ -50,8 +50,9 @@ contract PrivateToken {
 
     // @audit important on this version if user mint more than once it will loose all balance
     function mint(uint256 amount, bytes memory proof_mint, EncryptedBalance memory totalBalanceEncrypted) external {
-        uint256 pendingAmount = reader.readAndReset(msg.sender);
-        require(pendingAmount == amount, "No balance to mint");
+        // @audit for demo propose we comment the balance check
+        //uint256 pendingAmount = reader.readAndReset(msg.sender);
+        //require(pendingAmount == amount, "No balance to mint");
 
         uint256 newTotalSupply = uint256(totalSupply + amount);
         require(newTotalSupply <= type(uint40).max, "Total supply cannot exceed 1099511627775");
